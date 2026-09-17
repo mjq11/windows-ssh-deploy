@@ -1,0 +1,4 @@
+interface:
+  display_name: "Windows SSH 远程部署"
+  short_description: "复用 Mac 到 Windows 的 SSH 检测、部署更新、验收与回滚流程"
+  default_prompt: "使用 $windows-ssh-deploy 检查服务器 SSH 和中转服务状态；若本次任务要求部署，再完成备份、更新及验收。"
