@@ -1,0 +1,14 @@
+{
+  "status": "validated",
+  "profile": "standard",
+  "source_digest": "45f753ab7d70b80793696fc3db94afd1aecfd0bbac1bb8e9f47d6ecae2f9f87d",
+  "report_sha256": "508f6a0cec5f213d68b44f04138972c7e8d4dcb8f8f4d084917f453fd3e0f579",
+  "confirmed_counts": {
+    "informational": 0,
+    "low": 0,
+    "medium": 0,
+    "high": 0,
+    "critical": 0
+  },
+  "needs_validation_count": 0
+}

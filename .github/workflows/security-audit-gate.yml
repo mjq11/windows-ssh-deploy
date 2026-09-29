@@ -1,0 +1,30 @@
+name: Security audit gate
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  audit-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted base
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: trusted
+          persist-credentials: false
+      - name: Check out proposed source
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+      - name: Verify signed audit for proposed source
+        if: github.event_name == 'pull_request_target'
+        run: python3 trusted/.security-audit/security_gate.py check --repo candidate --trusted-root trusted --ref HEAD
+      - name: Verify signed audit on main
+        if: github.event_name == 'push'
+        run: python3 trusted/.security-audit/security_gate.py check --repo trusted --trusted-root trusted --ref HEAD
