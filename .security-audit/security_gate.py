@@ -82,17 +82,20 @@ def finding_counts(findings):
 
 def check(ref):
     config, level = policy(ref)
-    record = json.loads(read_at(STATE, ref))
+    record_bytes = read_at(STATE, ref)
+    record = json.loads(record_bytes)
     signature = read_at(SIGNATURE, ref)
     with __import__('tempfile').TemporaryDirectory() as temp:
         signature_path = Path(temp) / 'attestation.sig'
+        record_path = Path(temp) / 'attestation.json'
         signature_path.write_bytes(signature)
+        record_path.write_bytes(record_bytes)
         verified = subprocess.run(['openssl', 'pkeyutl', '-verify', '-pubin',
             '-inkey', str(TRUSTED_ROOT / PUBLIC_KEY), '-rawin',
-            '-in', '/dev/stdin', '-sigfile', str(signature_path)],
-            input=read_at(STATE, ref), capture_output=True)
+            '-in', str(record_path), '-sigfile', str(signature_path)],
+            capture_output=True)
         if verified.returncode:
-            raise RuntimeError('Attestation signature is invalid')
+            raise RuntimeError('Attestation signature is invalid: ' + verified.stderr.decode(errors='replace').strip())
     actual = source_digest(ref)
     if record.get('source_digest') != actual:
         raise RuntimeError('Security audit is stale for this source snapshot')
